@@ -1,10 +1,10 @@
 class BoardCase
-    attr_accessor :case, :value, :name
+    attr_accessor :symbol, :case_number
 
     def initialize(case_name)
         
-        @value = value
-        @name = case_name
+        @symbol = symbol
+        @case_number = case_number
 
     end
 
