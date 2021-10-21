@@ -1,80 +1,85 @@
 require_relative 'board'
 require_relative 'player'
 
+
 class Game
 
-    attr_accessor :board, :player1, :player2
+    require_relative 'board'
+    require 'view/show'
+    require_relative 'player'
 
-    def initialize
+    class Game
+        attr_accessor :current_player, :status, :player_list, :board
 
-        @players = []
-        
-        puts "Joueur 1, Quelle est ton nom ?"
+        def initialize
+            # Création de deux joueurs, créer un board, met le status "en cours", définit le current_player
+            @player1 = Player.new
+            @player2 = Player.new
+            @player_list = [@player1, @player2]
+            @status = 'en cours'
 
-        player_name = gets.chomp
-        @player1 = Player.new(player_name, "X")
-        @players << @player1
-        @player1.value = "X"
-        @current_player = @player1
-
-        puts " Joueur 2, Quelle est ton nom ?"
-
-        player_name = gets.chomp
-        player2 = Player.new(player_name, "O")
-        @players << @player2
-        
-        
-
-
-        puts "Bienvenue " + player1.name + " et " + player2.name + " ! "
-        puts player1.name + " jouera avec les " + player1.value + " et " + player2.name + " jouera avec les " + player2.value + "."
-
-        @board = Board.new
-
-    end
-
-    def switch_player
-        if @current_player == @player1
-            @current_player = player2
-        else
-            current_player = @player1
-        end
-    end
-
-
-    def turn
-        9.times do
-            if @board.victory? == false 
-                puts @board.display_board
-                @board.play_turn(@current_player)
-                switch_player
-             else
-                break
-                
+            # Type de jeton
+            if @player1.player_symbol == @player2.player_symbol
+                puts "Attention, les jetons sont identiques !! changeons les"
+                if player1.player_symbol == 'X'
+                    @player2.player_symbol == 'O'
+                elsif player1.player_symbol == 'O'
+                    @player2.player_symbol == 'X'
+                end
             end
-            puts @board.display_board
+
+            @player1.show_state
+            @player2.show_state
+            # Init du damier
+            @board = Board.new
+            # Affiche le damier
+            Show.new.show_board(@board)
         end
-        if @board.victory? == true
-            switch_player
-            puts "#{current_player.name} a gagné !!"
-        else
-            puts "EGALITÉ"
+
+        def turn
+            i = 0
+            while @status == 'en cours' && i<9
+                @current_player = @player_list[i%2]
+                # Cette méthode permet d'alterner les tours
+                Show.new.show_board(@board)
+
+                # Check gagnant
+                if @board.victory?(@board)
+                    @status = 'Gagnant '
+                    break
+                end
+
+                i+=1 # Compte le nombre de tours
+            end
         end
-    end
 
+        def new_round
+            print "On en refait une (O/N) ? "
+            choix = gets.chomp.upcase
 
-    def again
-        puts "Écris 'oui' si tu veux rejouer"
-        new_game = gets.chomp.to_s
-        if new_game == "oui"
-            game = Game.new
-            game.turn
-            game.again
+            if choix == 'O'
+                @board = Board.new
+                @status = "en cours"
+                puts '-' * 20
+                puts "C'est reparti !"
+                Show.new.show_board(@board)
 
-        else
+            elsif choix == 'N'
+                puts "A plus !"
+                exit
 
-            puts "tant pis !"
+                elsif
+                    new_round
+                end
+            end
+
+        def game_over
+            if @status == 'en cours'
+                puts "Match nul"
+                elsif @status == 'gagnant '
+                    puts "C'est #{current_player.player_name} qui l'emporte ! Bravo !!"
+                end
+            end
 
         end
-    end
-end
+
