@@ -7,7 +7,7 @@ class Game
 
     def initialize
 
-        @player = []
+        @players = []
         
         puts "Joueur 1, Quelle est ton nom ?"
 
@@ -20,9 +20,11 @@ class Game
         puts " Joueur 2, Quelle est ton nom ?"
 
         player_name = gets.chomp
-        player2 = Player.new(player_name, "0")
+        player2 = Player.new(player_name, "O")
         @players << @player2
-        @player2.value = "0"
+        
+        
+
 
         puts "Bienvenue " + player1.name + " et " + player2.name + " ! "
         puts player1.name + " jouera avec les " + player1.value + " et " + player2.name + " jouera avec les " + player2.value + "."
@@ -30,4 +32,49 @@ class Game
         @board = Board.new
 
     end
-    
+
+    def switch_player
+        if @current_player == @player1
+            @current_player = player2
+        else
+            current_player = @player1
+        end
+    end
+
+
+    def turn
+        9.times do
+            if @board.victory? == false 
+                puts @board.display_board
+                @board.play_turn(@current_player)
+                switch_player
+             else
+                break
+                
+            end
+            puts @board.display_board
+        end
+        if @board.victory? == true
+            switch_player
+            puts "#{current_player.name} a gagné !!"
+        else
+            puts "EGALITÉ"
+        end
+    end
+
+
+    def again
+        puts "Écris 'oui' si tu veux rejouer"
+        new_game = gets.chomp.to_s
+        if new_game == "oui"
+            game = Game.new
+            game.turn
+            game.again
+
+        else
+
+            puts "tant pis !"
+
+        end
+    end
+end

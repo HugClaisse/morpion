@@ -9,7 +9,7 @@ class Board
         @board = []
 
         9.times do |i|
-            @board << Board_case.new("case#{i+1}").value
+            @board << BoardCase.new("case#{i+1}").value
         end
 
 
